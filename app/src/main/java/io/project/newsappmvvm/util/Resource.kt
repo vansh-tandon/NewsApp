@@ -5,6 +5,7 @@ package io.project.newsappmvvm.util
 //are allowed to inherit from resource class
 //here we will define 3 different classes and only those are allowed to inherit
 //from resource
+//generic type will be used to pass NewsResponse
 sealed class Resource<T>(
     val data: T? = null,
     val message: String? = null
