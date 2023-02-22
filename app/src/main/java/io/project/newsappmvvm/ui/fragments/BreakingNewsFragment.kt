@@ -6,6 +6,7 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.project.newsappmvvm.R
 import io.project.newsappmvvm.adapters.NewsAdapter
@@ -26,6 +27,17 @@ class BreakingNewsFragment: Fragment(R.layout.fragment_breaking_news) {
         binding = FragmentBreakingNewsBinding.bind(view)
         viewModel = (activity as NewsActivity).viewModel
         setupRecyclerView()
+
+        newsAdapter.setOnClickListener {
+            val bundle = Bundle().apply {
+                //here article is the key and it is the
+                // article as a value for parameter/bundle
+                putSerializable("article", it)
+            }
+            //here inside the navigation we'll pass the res. id of an action
+            //that we need to perform
+            findNavController().navigate(R.id.action_breakingNewsFragment_to_articleFragment, bundle)
+        }
 
         viewModel.breakingNews.observe(viewLifecycleOwner, Observer { response ->
             when(response){
