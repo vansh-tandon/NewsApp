@@ -2,6 +2,7 @@ package io.project.newsappmvvm.repository
 
 import io.project.newsappmvvm.api.RetrofitInstance
 import io.project.newsappmvvm.db.ArticleDatabase
+import io.project.newsappmvvm.models.Article
 import retrofit2.Retrofit
 
 
@@ -15,4 +16,15 @@ class NewsRepository(val db: ArticleDatabase) {
 
     suspend fun searchNews(searchQuery: String, pageNumber: Int) =
         RetrofitInstance.api.searchForNews(searchQuery, pageNumber)
+
+    //For managing the ArticleDao
+    suspend fun upsert(article: Article) = db.getArticleDao().upsert(article)
+
+    //fun. to return live data
+    fun getSavedNews() = db.getArticleDao().getAllArticles()
+
+    //fun. to delete an article
+    suspend fun deleteArticle(article: Article) = db.getArticleDao().deleteArticles(article)
+
+
 }
