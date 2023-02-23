@@ -75,7 +75,7 @@ class SearchNewsFragment: Fragment(R.layout.fragment_search_news) {
                         val totalPages = newsResponse.totalResults / Constants.QUERY_PAGE_SIZE + 2
                         isLastPage = viewModel.searchNewsPage == totalPages
                         if(isLastPage){
-                            binding.rvSearchNews.setPadding(0,0,0,0,)
+                            binding.rvSearchNews.setPadding(0,0,0,0)
                         }
 
                     }
