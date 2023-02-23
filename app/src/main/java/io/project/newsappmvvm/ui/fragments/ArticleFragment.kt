@@ -27,7 +27,7 @@ class ArticleFragment: Fragment(R.layout.fragment_article) {
             //to make sure that the page will always load inside this webView
             //but not standard browser
             webViewClient = WebViewClient()
-            loadUrl(article.url)
+            article.url?.let { loadUrl(it) }
         }
 
         binding.fab.setOnClickListener {

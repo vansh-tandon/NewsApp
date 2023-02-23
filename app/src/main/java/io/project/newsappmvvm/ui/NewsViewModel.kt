@@ -9,7 +9,10 @@ import io.project.newsappmvvm.repository.NewsRepository
 import io.project.newsappmvvm.util.Resource
 import kotlinx.coroutines.launch
 import retrofit2.Response
-import retrofit2.http.Query
+
+//For pagination first of all we'll have to save current response in
+//NewsViewModel, we'll do it here coz it doesn't destroy on device rotation
+
 
 //here we have the instance of newsRepository
 //from here we will call the function from our newsRepository
@@ -21,10 +24,14 @@ class NewsViewModel(val newsRepository: NewsRepository): ViewModel() {
     //live data obj.
     val breakingNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
     //for pagination
-    val  breakingNewsPage = 1
+    var  breakingNewsPage = 1
+
+    var breakingNewsResponse: NewsResponse? = null
 
     val searchNews: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
-    val  searchNewsPage = 1
+    var searchNewsPage = 1
+    var searchNewsResponse: NewsResponse? = null
+
 
     init {
         getBreakingNews("in")
@@ -48,7 +55,20 @@ class NewsViewModel(val newsRepository: NewsRepository): ViewModel() {
     private fun handleBreakingNewsResponse(response: Response<NewsResponse>) : Resource<NewsResponse>{
         if(response.isSuccessful){
             response.body()?.let {resultResponse ->
-                return Resource.Success(resultResponse)
+                //every time we get response we increase the pg no. by 1
+                breakingNewsPage++
+                //if that response is the first response, bnr = rr, with all available articles
+                //and all the pages that we loaded yet
+                if (breakingNewsResponse == null){
+                    breakingNewsResponse = resultResponse
+                }
+                else{
+                    //if we have loaded more than 1 page already
+                    val oldArticles = breakingNewsResponse?.articles
+                    val newArticles = resultResponse.articles
+                    oldArticles?.addAll(newArticles)
+                }
+                return Resource.Success(breakingNewsResponse?: resultResponse)
             }
         }
         return Resource.Error(response.message())
@@ -57,11 +77,29 @@ class NewsViewModel(val newsRepository: NewsRepository): ViewModel() {
     private fun handleSearchNewsResponse(response: Response<NewsResponse>) : Resource<NewsResponse>{
         if(response.isSuccessful){
             response.body()?.let {resultResponse ->
-                return Resource.Success(resultResponse)
+                //every time we get response we increase the pg no. by 1
+                searchNewsPage++
+                //if that response is the first response, snr = rr, with all available articles
+                //and all the pages that we loaded yet
+                if (searchNewsResponse == null){
+                    searchNewsResponse = resultResponse
+                }
+                else{
+                    //if we have loaded more than 1 page already
+                    val oldArticles = searchNewsResponse?.articles
+                    val newArticles = resultResponse.articles
+                    oldArticles?.addAll(newArticles)
+                }
+                return Resource.Success(searchNewsResponse?: resultResponse)
             }
         }
         return Resource.Error(response.message())
     }
+    //next step is to detect when we completely scroll down then we want to paginate
+    //our request and we want to load the nxt page, that we need to do in breaking news frag,
+    //and search news fragment because these are the two frags that are able to
+    //paginate our request
+
 
     fun saveArticle(article: Article) = viewModelScope.launch {
         newsRepository.upsert(article)
