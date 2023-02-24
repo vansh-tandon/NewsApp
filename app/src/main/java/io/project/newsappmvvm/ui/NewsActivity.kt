@@ -27,10 +27,10 @@ class NewsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val newsRepository = NewsRepository(ArticleDatabase(this))
-        val viewModelProviderFactory = NewsViewModelProviderFactory(newsRepository)
+        val viewModelProviderFactory = NewsViewModelProviderFactory(newsRepository, application)
         viewModel = ViewModelProvider(this, viewModelProviderFactory).get(NewsViewModel::class.java)
 
-        // Find nav host fragment and use it to find nav controller
+        // Find nav host fragment and use it to fin d nav controller
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.newsNavHostFragment) as NavHostFragment
         binding.bottomNavigationView.setupWithNavController(navHostFragment.findNavController())
     }
